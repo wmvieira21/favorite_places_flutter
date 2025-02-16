@@ -28,6 +28,7 @@ final customizedTheme = ThemeData.dark().copyWith(
 );
 
 void main() {
+  
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     ProviderScope(
