@@ -1,7 +1,8 @@
-import 'package:favorite_places/models/place.dart';
-import 'package:favorite_places/provider/favorite_places_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:favorite_places/provider/favorite_places_provider.dart';
+import 'package:favorite_places/models/place.dart';
+import 'package:favorite_places/screens/favorite_place_details_screen.dart';
 
 class FavoritePlacesList extends ConsumerStatefulWidget {
   const FavoritePlacesList({super.key});
@@ -12,9 +13,19 @@ class FavoritePlacesList extends ConsumerStatefulWidget {
 }
 
 class _FavoritePlacesList extends ConsumerState<FavoritePlacesList> {
+  _buildFavoritePlace(Place place) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FavoritePlaceDetailsScreen(place: place),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Place> favoritePlacesList = ref.watch(favoritePlacesProvider);
+
     if (favoritePlacesList.isEmpty) {
       return Center(
         child: Text(
@@ -27,12 +38,12 @@ class _FavoritePlacesList extends ConsumerState<FavoritePlacesList> {
       itemCount: favoritePlacesList.length,
       itemBuilder: (context, index) {
         return Padding(
-          padding: EdgeInsets.all(16),
-          child: Text(
-            favoritePlacesList[index].tittle,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        );
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ListTile(
+              title: Text(favoritePlacesList[index].tittle),
+              subtitle: Text(favoritePlacesList[index].id),
+              onTap: () => _buildFavoritePlace(favoritePlacesList[index]),
+            ));
       },
     );
   }

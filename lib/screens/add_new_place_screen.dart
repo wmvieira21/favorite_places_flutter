@@ -1,3 +1,4 @@
+import 'package:favorite_places/dialogs/alert_dialog.dart';
 import 'package:favorite_places/models/place.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,25 +15,18 @@ class AddNewPlaceScreen extends ConsumerStatefulWidget {
 class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
   final TextEditingController tittleController = TextEditingController();
 
-  _saveFavoritePlace() {
-    if (tittleController.text.isEmpty) {
-      return showDialog(
+  _showAlertError() {
+    return showDialog(
         useSafeArea: true,
         context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-          title: Text('Error'),
-          content: Text('Invalid tittle.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Ok'),
-            ),
-          ],
-        ),
-      );
-    }
+        builder: (context) =>
+            AlertDialogCustomized(errorMessage: 'Tittle must be valid.'));
+  }
 
+  _saveFavoritePlace() {
+    if (tittleController.text.isEmpty) {
+      return _showAlertError();
+    }
     ref
         .read(favoritePlacesProvider.notifier)
         .addFavoritePlace(Place(tittleController.text));
@@ -51,7 +45,7 @@ class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
       appBar: AppBar(
         title: Text('Add new place'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -66,8 +60,8 @@ class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
             ),
             ElevatedButton.icon(
               onPressed: () => _saveFavoritePlace(),
-              label: Text('Add'),
-              icon: Icon(Icons.add),
+              label: const Text('Add'),
+              icon: const Icon(Icons.add),
             )
           ],
         ),
