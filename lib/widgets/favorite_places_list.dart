@@ -40,8 +40,11 @@ class _FavoritePlacesList extends ConsumerState<FavoritePlacesList> {
         return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: ListTile(
+              leading: CircleAvatar(
+                radius: 26,
+                backgroundImage: FileImage(favoritePlacesList[index].image),
+              ),
               title: Text(favoritePlacesList[index].tittle),
-              subtitle: Text(favoritePlacesList[index].id),
               onTap: () => _buildFavoritePlace(favoritePlacesList[index]),
             ));
       },
