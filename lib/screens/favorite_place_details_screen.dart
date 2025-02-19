@@ -10,11 +10,19 @@ class FavoritePlaceDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Place details'),
+        title: Text(place.tittle),
       ),
-      body: Center(
-        child:
-            Text(place.tittle, style: Theme.of(context).textTheme.titleMedium),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(spacing: 20, children: [
+          Text(place.tittle, style: Theme.of(context).textTheme.titleMedium),
+          Image.file(
+            place.image,
+            fit: BoxFit.fill,
+            width: double.infinity,
+            height: 300,
+          ),
+        ]),
       ),
     );
   }

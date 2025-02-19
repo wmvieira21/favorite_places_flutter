@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:favorite_places/widgets/image_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,6 +18,7 @@ class AddNewPlaceScreen extends ConsumerStatefulWidget {
 
 class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
   final TextEditingController tittleController = TextEditingController();
+  File? _selectedImage;
 
   _showAlertError() {
     return showDialog(
@@ -25,12 +29,12 @@ class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
   }
 
   _saveFavoritePlace() {
-    if (tittleController.text.isEmpty) {
+    if (tittleController.text.isEmpty || _selectedImage == null) {
       return _showAlertError();
     }
     ref
         .read(favoritePlacesProvider.notifier)
-        .addFavoritePlace(Place(tittleController.text));
+        .addFavoritePlace(Place(tittleController.text, _selectedImage!));
     Navigator.pop(context);
   }
 
@@ -49,6 +53,7 @@ class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          spacing: 20,
           children: [
             TextField(
               controller: tittleController,
@@ -59,7 +64,10 @@ class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
                 label: Text('Title'),
               ),
             ),
+            ImageInput(onSelectingImage: (image) => _selectedImage = image),
             ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.onPrimary),
               onPressed: () => _saveFavoritePlace(),
               label: const Text('Add'),
               icon: const Icon(Icons.add),
