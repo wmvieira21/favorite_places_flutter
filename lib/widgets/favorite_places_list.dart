@@ -40,6 +40,7 @@ class _FavoritePlacesList extends ConsumerState<FavoritePlacesList> {
         return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: ListTile(
+              contentPadding: EdgeInsets.all(16),
               leading: CircleAvatar(
                 radius: 26,
                 backgroundImage: FileImage(favoritePlacesList[index].image),
