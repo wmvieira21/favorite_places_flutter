@@ -20,22 +20,24 @@ class AddNewPlaceScreen extends ConsumerStatefulWidget {
 class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
   final TextEditingController tittleController = TextEditingController();
   File? _selectedImage;
+  PlaceLocation? _location;
 
   _showAlertError() {
     return showDialog(
         useSafeArea: true,
         context: context,
         builder: (context) =>
-            AlertDialogCustomized(errorMessage: 'Tittle must be valid.'));
+            AlertDialogCustomized(errorMessage: 'All fields must be valid.'));
   }
 
   _saveFavoritePlace() {
-    if (tittleController.text.isEmpty || _selectedImage == null) {
+    if (tittleController.text.isEmpty ||
+        _selectedImage == null ||
+        _location == null) {
       return _showAlertError();
     }
-    ref
-        .read(favoritePlacesProvider.notifier)
-        .addFavoritePlace(Place(tittleController.text, _selectedImage!));
+    ref.read(favoritePlacesProvider.notifier).addFavoritePlace(
+        Place(tittleController.text, _selectedImage!, _location!));
     Navigator.pop(context);
   }
 
@@ -65,7 +67,8 @@ class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
               ),
             ),
             ImageInput(onSelectingImage: (image) => _selectedImage = image),
-            LocationInput(),
+            LocationInput(
+                selectedLocationMap: (location) => _location = location),
           ],
         ),
       ),

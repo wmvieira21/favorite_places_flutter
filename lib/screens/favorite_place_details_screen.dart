@@ -20,9 +20,18 @@ class FavoritePlaceDetailsScreen extends StatelessWidget {
             width: double.infinity,
             height: double.infinity,
           ),
-          Center(
-              child: Text(place.tittle,
-                  style: Theme.of(context).textTheme.titleLarge)),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(place.tittle,
+                    style: Theme.of(context).textTheme.titleLarge),
+                Text(place.location.address,
+                    style: Theme.of(context).textTheme.titleLarge),
+              ],
+            ),
+          ),
         ],
       ),
     );

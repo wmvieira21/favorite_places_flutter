@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
+import 'package:favorite_places/models/place.dart';
 
 class LocationInput extends StatefulWidget {
-  const LocationInput({super.key});
+  const LocationInput({super.key, required this.selectedLocationMap});
+  final Function(PlaceLocation location) selectedLocationMap;
 
   @override
   State<StatefulWidget> createState() {
@@ -11,38 +15,55 @@ class LocationInput extends StatefulWidget {
 }
 
 class _LocationInput extends State<LocationInput> {
+  PlaceLocation? pickedLocation;
+  String _currentLocation = 'No location chosen';
   bool isGettingLocation = false;
 
   _getCurrentLocation() async {
     setState(() {
       isGettingLocation = true;
     });
-    Location location = new Location();
 
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-    LocationData _locationData;
+    Location location = Location();
 
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+    LocationData locationData;
+
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
         return;
       }
     }
 
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
         return;
       }
     }
-    _locationData = await location.getLocation();
+
+    locationData = await location.getLocation();
+    _getLocationGoogleMaps(locationData.latitude!, locationData.longitude!);
+  }
+
+  _getLocationGoogleMaps(double latitude, double longitude) async {
+    final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=AIzaSyDFB2WLqjpKNCXyrCHXa8nPtztK5stB8go');
+    http.Response response = await http.get(url);
+    final data = jsonDecode(response.body);
 
     setState(() {
+      _currentLocation = data['results'][0]['formatted_address'];
       isGettingLocation = false;
     });
+
+    pickedLocation = PlaceLocation(
+        latitude: latitude, longitude: longitude, address: _currentLocation);
+    widget.selectedLocationMap(pickedLocation!);
   }
 
   @override
@@ -64,9 +85,12 @@ class _LocationInput extends State<LocationInput> {
           child: Center(
             child: !isGettingLocation
                 ? Text(
-                    'No location chosen',
+                    _currentLocation,
+                    maxLines: 5,
+                    softWrap: true,
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface),
+                    textAlign: TextAlign.center,
                   )
                 : const CircularProgressIndicator(),
           ),
