@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:favorite_places/widgets/image_input.dart';
+import 'package:favorite_places/widgets/location_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -58,22 +59,22 @@ class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
             TextField(
               controller: tittleController,
               maxLength: 30,
-              autofocus: true,
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 label: Text('Title'),
               ),
             ),
             ImageInput(onSelectingImage: (image) => _selectedImage = image),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.onPrimary),
-              onPressed: () => _saveFavoritePlace(),
-              label: const Text('Add'),
-              icon: const Icon(Icons.add),
-            )
+            LocationInput(),
           ],
         ),
+      ),
+      floatingActionButton: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.onPrimary),
+        onPressed: () => _saveFavoritePlace(),
+        label: const Text('Save'),
+        icon: const Icon(Icons.add),
       ),
     );
   }

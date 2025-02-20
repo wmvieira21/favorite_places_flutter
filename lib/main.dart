@@ -22,8 +22,7 @@ final customizedTheme = ThemeData.dark().copyWith(
   ),
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
-        backgroundColor: colorScheme.onTertiary,
-        foregroundColor: colorScheme.primary),
+        foregroundColor: colorScheme.primary, iconSize: 22),
   ),
 );
 

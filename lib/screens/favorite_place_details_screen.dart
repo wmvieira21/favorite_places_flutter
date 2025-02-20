@@ -12,17 +12,18 @@ class FavoritePlaceDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(place.tittle),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(spacing: 20, children: [
-          Text(place.tittle, style: Theme.of(context).textTheme.titleMedium),
+      body: Stack(
+        children: [
           Image.file(
             place.image,
-            fit: BoxFit.fill,
+            fit: BoxFit.cover,
             width: double.infinity,
-            height: 300,
+            height: double.infinity,
           ),
-        ]),
+          Center(
+              child: Text(place.tittle,
+                  style: Theme.of(context).textTheme.titleLarge)),
+        ],
       ),
     );
   }
