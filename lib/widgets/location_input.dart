@@ -4,6 +4,8 @@ import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:favorite_places/models/place.dart';
 
+const apiKey = "AIzaSyDFB2WLqjpKNCXyrCHXa8nPtztK5stB8go";
+
 class LocationInput extends StatefulWidget {
   const LocationInput({super.key, required this.selectedLocationMap});
   final Function(PlaceLocation location) selectedLocationMap;
@@ -18,6 +20,10 @@ class _LocationInput extends State<LocationInput> {
   PlaceLocation? pickedLocation;
   String _currentLocation = 'No location chosen';
   bool isGettingLocation = false;
+
+  String locationImageURL(double latitude, double longitude) {
+    return "https://maps.googleapis.com/maps/api/staticmap?center=$latitude,$longitude&zoom=17&size=600x200&markers=color:purple%7Clabel:A%7C$latitude,$longitude&key=$apiKey";
+  }
 
   _getCurrentLocation() async {
     setState(() {
@@ -52,7 +58,7 @@ class _LocationInput extends State<LocationInput> {
 
   _getLocationGoogleMaps(double latitude, double longitude) async {
     final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=AIzaSyDFB2WLqjpKNCXyrCHXa8nPtztK5stB8go');
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey');
     http.Response response = await http.get(url);
     final data = jsonDecode(response.body);
 
@@ -62,12 +68,36 @@ class _LocationInput extends State<LocationInput> {
     });
 
     pickedLocation = PlaceLocation(
-        latitude: latitude, longitude: longitude, address: _currentLocation);
+      latitude: latitude,
+      longitude: longitude,
+      address: _currentLocation,
+      imageURL: locationImageURL(latitude, longitude),
+    );
+
     widget.selectedLocationMap(pickedLocation!);
+  }
+
+  Widget get getLocationContainerPreview {
+    return (pickedLocation == null
+        ? Text(_currentLocation,
+            maxLines: 5,
+            softWrap: true,
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge!
+                .copyWith(color: Theme.of(context).colorScheme.onSurface),
+            textAlign: TextAlign.center)
+        : Image.network(
+            pickedLocation!.imageURL,
+            fit: BoxFit.cover,
+            height: 300,
+          ));
   }
 
   @override
   Widget build(BuildContext context) {
+    final imageContainerPreview = getLocationContainerPreview;
+
     return Column(
       spacing: 10,
       children: [
@@ -84,14 +114,7 @@ class _LocationInput extends State<LocationInput> {
           ),
           child: Center(
             child: !isGettingLocation
-                ? Text(
-                    _currentLocation,
-                    maxLines: 5,
-                    softWrap: true,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface),
-                    textAlign: TextAlign.center,
-                  )
+                ? imageContainerPreview
                 : const CircularProgressIndicator(),
           ),
         ),

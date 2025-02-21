@@ -45,7 +45,16 @@ class _FavoritePlacesList extends ConsumerState<FavoritePlacesList> {
                 radius: 26,
                 backgroundImage: FileImage(favoritePlacesList[index].image),
               ),
-              title: Text(favoritePlacesList[index].tittle),
+              title: Text(
+                favoritePlacesList[index].tittle,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              subtitle: Text(
+                favoritePlacesList[index].location.address,
+                style: Theme.of(context).textTheme.titleSmall,
+                softWrap: true,
+                maxLines: 2,
+              ),
               onTap: () => _buildFavoritePlace(favoritePlacesList[index]),
             ));
       },

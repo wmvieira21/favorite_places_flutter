@@ -26,8 +26,9 @@ class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
     return showDialog(
         useSafeArea: true,
         context: context,
-        builder: (context) =>
-            AlertDialogCustomized(errorMessage: 'All fields must be valid.'));
+        builder: (context) => AlertDialogCustomized(
+            errorMessage:
+                "Do not forget to take a picture and pinpont the location."));
   }
 
   _saveFavoritePlace() {

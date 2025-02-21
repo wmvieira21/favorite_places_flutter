@@ -16,22 +16,40 @@ class FavoritePlaceDetailsScreen extends StatelessWidget {
         children: [
           Image.file(
             place.image,
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
             width: double.infinity,
             height: double.infinity,
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+              spacing: 5,
               children: [
-                Text(place.tittle,
-                    style: Theme.of(context).textTheme.titleLarge),
-                Text(place.location.address,
-                    style: Theme.of(context).textTheme.titleLarge),
+                CircleAvatar(
+                  radius: 100,
+                  backgroundImage: NetworkImage(place.location.imageURL),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [Colors.transparent, Colors.black54],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter),
+                  ),
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    place.location.address,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                    softWrap: true,
+                    maxLines: 2,
+                  ),
+                )
               ],
             ),
-          ),
+          )
         ],
       ),
     );
