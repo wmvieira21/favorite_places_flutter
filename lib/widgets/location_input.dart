@@ -1,10 +1,8 @@
-import 'dart:convert';
+import 'package:favorite_places/services/google_maps_service.dart';
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
-import 'package:http/http.dart' as http;
+import 'package:favorite_places/widgets/map_sreen.dart';
 import 'package:favorite_places/models/place.dart';
-
-const apiKey = "AIzaSyDFB2WLqjpKNCXyrCHXa8nPtztK5stB8go";
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationInput extends StatefulWidget {
   const LocationInput({super.key, required this.selectedLocationMap});
@@ -17,64 +15,44 @@ class LocationInput extends StatefulWidget {
 }
 
 class _LocationInput extends State<LocationInput> {
+  GoogleMapsService mapService = GoogleMapsService();
   PlaceLocation? pickedLocation;
   String _currentLocation = 'No location chosen';
   bool isGettingLocation = false;
-
-  String locationImageURL(double latitude, double longitude) {
-    return "https://maps.googleapis.com/maps/api/staticmap?center=$latitude,$longitude&zoom=17&size=600x200&markers=color:purple%7Clabel:A%7C$latitude,$longitude&key=$apiKey";
-  }
 
   _getCurrentLocation() async {
     setState(() {
       isGettingLocation = true;
     });
 
-    Location location = Location();
+    pickedLocation = await mapService.getCurrentLocation();
 
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
-    LocationData locationData;
-
-    serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-        return;
-      }
+    if (pickedLocation != null) {
+      setState(() {
+        _currentLocation = pickedLocation!.address;
+        isGettingLocation = false;
+      });
+      widget.selectedLocationMap(pickedLocation!);
     }
-
-    permissionGranted = await location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    locationData = await location.getLocation();
-    _getLocationGoogleMaps(locationData.latitude!, locationData.longitude!);
   }
 
-  _getLocationGoogleMaps(double latitude, double longitude) async {
-    final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey');
-    http.Response response = await http.get(url);
-    final data = jsonDecode(response.body);
+  _onSelectingLocationMap() async {
+    pickedLocation = pickedLocation ?? await mapService.getCurrentLocation();
 
-    setState(() {
-      _currentLocation = data['results'][0]['formatted_address'];
-      isGettingLocation = false;
-    });
+    LatLng? selectedLatLngOnMap =
+        await Navigator.of(context).push<LatLng?>(MaterialPageRoute(
+      builder: (context) =>
+          MapSreen(location: pickedLocation!, isSelecingLocation: true),
+    ));
+    if (selectedLatLngOnMap != null) {
+      PlaceLocation newPlaceLocation = await mapService.getPlaceLocation(
+          selectedLatLngOnMap.latitude, selectedLatLngOnMap.longitude);
 
-    pickedLocation = PlaceLocation(
-      latitude: latitude,
-      longitude: longitude,
-      address: _currentLocation,
-      imageURL: locationImageURL(latitude, longitude),
-    );
-
-    widget.selectedLocationMap(pickedLocation!);
+      setState(() {
+        pickedLocation = newPlaceLocation;
+      });
+      widget.selectedLocationMap(pickedLocation!);
+    }
   }
 
   Widget get getLocationContainerPreview {
@@ -130,7 +108,7 @@ class _LocationInput extends State<LocationInput> {
             TextButton.icon(
               icon: const Icon(Icons.map),
               label: const Text("Map"),
-              onPressed: () {},
+              onPressed: () => _onSelectingLocationMap(),
             ),
           ],
         )

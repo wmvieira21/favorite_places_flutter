@@ -1,10 +1,22 @@
 import 'package:favorite_places/models/place.dart';
+import 'package:favorite_places/widgets/map_sreen.dart';
 import 'package:flutter/material.dart';
 
 class FavoritePlaceDetailsScreen extends StatelessWidget {
   const FavoritePlaceDetailsScreen({super.key, required this.place});
 
   final Place place;
+
+  _onOpeningMapAvatar(context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MapSreen(
+            location: place.location,
+            isSelecingLocation: false,
+          ),
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +39,12 @@ class FavoritePlaceDetailsScreen extends StatelessWidget {
             child: Column(
               spacing: 5,
               children: [
-                CircleAvatar(
-                  radius: 100,
-                  backgroundImage: NetworkImage(place.location.imageURL),
+                GestureDetector(
+                  child: CircleAvatar(
+                    radius: 100,
+                    backgroundImage: NetworkImage(place.location.imageURL),
+                  ),
+                  onTap: () => _onOpeningMapAvatar(context),
                 ),
                 Container(
                   decoration: BoxDecoration(
