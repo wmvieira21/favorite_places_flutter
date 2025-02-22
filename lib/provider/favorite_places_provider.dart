@@ -63,7 +63,7 @@ class FavoritePlacesNotifier extends StateNotifier<List<Place>> {
       'tittle': place.tittle,
       'image': place.image.path,
       'lat': place.location.latitude,
-      'lng': place.location.latitude,
+      'lng': place.location.longitude,
       'address': place.location.address,
       'location_image': place.location.imageURL
     });
