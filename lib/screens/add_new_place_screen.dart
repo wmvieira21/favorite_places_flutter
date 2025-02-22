@@ -24,11 +24,12 @@ class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
 
   _showAlertError() {
     return showDialog(
-        useSafeArea: true,
-        context: context,
-        builder: (context) => AlertDialogCustomized(
-            errorMessage:
-                "Do not forget to take a picture and pinpont the location."));
+      useSafeArea: true,
+      context: context,
+      builder: (context) => AlertDialogCustomized(
+          errorMessage:
+              "Do not forget to take a picture and pinpont the location."),
+    );
   }
 
   _saveFavoritePlace() {
@@ -38,7 +39,11 @@ class _AddNewPlaceScreenState extends ConsumerState<AddNewPlaceScreen> {
       return _showAlertError();
     }
     ref.read(favoritePlacesProvider.notifier).addFavoritePlace(
-        Place(tittleController.text, _selectedImage!, _location!));
+          Place(
+              tittle: tittleController.text,
+              image: _selectedImage!,
+              location: _location!),
+        );
     Navigator.pop(context);
   }
 
